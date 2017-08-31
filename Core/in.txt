@@ -1,0 +1,11 @@
+//  test
+//  8/30
+int main()
+{
+    int sum=0;
+    while sum< 100
+        sum=sum+"123 456 \\ aa ";
+        sum = bbccddee;
+        sum = int abc;
+    return 0;
+}
