@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,8 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{802B0EEF-3BE6-4947-8764-EBDAD1278935}</ProjectGuid>
+    <ProjectGuid>{30FD7D7D-3DD0-4E4C-BE11-6E826FF993DE}</ProjectGuid>
     <RootNamespace>Core</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -111,14 +110,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\Desktop\Core\conColor.h" />
-    <ClInclude Include="..\..\..\..\Desktop\Core\head.h" />
-    <ClInclude Include="..\..\..\..\Desktop\Core\lexAnalyzer.h" />
+    <ClCompile Include="conColor.cpp" />
+    <ClCompile Include="Core.cpp" />
+    <ClCompile Include="lexAnalyzer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\Desktop\Core\conColor.cpp" />
-    <ClCompile Include="..\..\..\..\Desktop\Core\Core.cpp" />
-    <ClCompile Include="..\..\..\..\Desktop\Core\lexAnalyzer.cpp" />
+    <ClInclude Include="conColor.h" />
+    <ClInclude Include="head.h" />
+    <ClInclude Include="lexAnalyzer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

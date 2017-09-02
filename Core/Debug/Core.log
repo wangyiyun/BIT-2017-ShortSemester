@@ -1,4 +1,10 @@
 ﻿  lexAnalyzer.cpp
-c:\users\11215\desktop\core\lexanalyzer.h(26): warning C4091: “static ”: 没有声明变量时忽略“lexAn”的左侧
-  Core.vcxproj -> C:\Users\11215\source\repos\Core\Debug\Core.exe
-  Core.vcxproj -> C:\Users\11215\source\repos\Core\Debug\Core.pdb (Partial PDB)
+c:\users\11215\desktop\core\lexanalyzer.h(27): warning C4091: “static ”: 没有声明变量时忽略“lexAn”的左侧
+  正在生成代码...
+  正在编译...
+  conColor.cpp
+  Core.cpp
+c:\users\11215\desktop\core\lexanalyzer.h(27): warning C4091: “static ”: 没有声明变量时忽略“lexAn”的左侧
+  正在生成代码...
+  Core.vcxproj -> C:\Users\11215\Desktop\Core\Debug\Core.exe
+  Core.vcxproj -> C:\Users\11215\Desktop\Core\Debug\Core.pdb (Partial PDB)
