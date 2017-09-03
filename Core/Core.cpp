@@ -31,7 +31,7 @@ int main()
 	{
 		dat += tmp;
 	}
-	dat += " ";
+	dat += '\0';
 	lexAn a = lexAn(); //词法分析器对象
 	auto k = a.analyze(dat);
 	for (auto i : k) //循环到k结束

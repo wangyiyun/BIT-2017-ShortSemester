@@ -27,3 +27,4 @@
 #define CHAR_QUOTE (10<<4)	//quote	'\"'
 #define CHAR_DOT (11<<4)	//dot '.'
 #define CHAR_ERROR (13<<4)	//ERROR
+#define CHAR_END 999		//END

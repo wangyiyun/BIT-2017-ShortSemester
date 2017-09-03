@@ -2,6 +2,14 @@ int main()
 {
 	int i, j;
 	print i;
+
+
+
 	"RUA!"
+	//lululu
+	// \lalala
+	"aiufw
+"
+	return
 	WHAT \ TEST
 }

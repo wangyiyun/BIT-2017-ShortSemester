@@ -14,7 +14,7 @@ int typeColor[] =
 	COLOR_WHITE,
 	COLOR_WHITE,
 	COLOR_RED,
-	COLOR_GREEN
+	COLOR_GREY
 };
 //#define TYPE_KEY 0
 //#define TYPE_VAR 1
@@ -43,6 +43,10 @@ int lexAn::getCharType(char x) //确认当前单个字符的token
 	{
 		return CHAR_ALPHA;
 	}
+	if (x == '\0')
+	{
+		return CHAR_END;
+	}
 	if (x == '.')
 	{
 		return CHAR_DOT;
@@ -63,7 +67,7 @@ int lexAn::getCharType(char x) //确认当前单个字符的token
 	{
 		return CHAR_ESCAP;
 	}
-	if ( x == '\n' || x == '\0')
+	if ( x == '\n')
 	{
 		return CHAR_ENTER;
 	}
@@ -80,10 +84,10 @@ int lexAn::getCharType(char x) //确认当前单个字符的token
 		return CHAR_DIVIS;
 	}
 
-	if (x == '.') //real
-	{
-		return CHAR_DIGIT | 1;
-	}
+	//if (x == '.') //real
+	//{
+	//	return CHAR_DIGIT | 1;
+	//}
 
 
 	if (DEBUG)
@@ -99,17 +103,17 @@ int lexAn::getTokenType(int status) //查看status
 	switch (status)
 	{
 	case CHAR_ERROR:
-			return TYPE_ERR;
+		return TYPE_ERR;
 	case CHAR_ERROR | 1:
-		return TYPE_NOTE;
-	case CHAR_DIVIS | 2:	//note
+	case CHAR_DIVIS | 1:	//note
 		return TYPE_NOTE;
 	case CHAR_SPACE:		//' ',  '\t'
 		return TYPE_FMT;
 	case CHAR_DIGIT:		//integer
 	case CHAR_DIGIT | 1:	//real
-	case CHAR_QUOTE | 1:	//string
-		return TYPE_CON;
+	case CHAR_QUOTE:	//string
+	case CHAR_QUOTE | 1:
+		return TYPE_OPR;
 	case CHAR_ALPHA:		//variable
 		return TYPE_VAR;
 	case CHAR_OPERA:		//operator
@@ -124,6 +128,8 @@ int lexAn::getTokenType(int status) //查看status
 	case CHAR_LARGE:		//'>'
 	case CHAR_DIVIS:		//'/'
 		return TYPE_OPR;
+	default:
+		return TYPE_FMT;
 	}
 	return 0;
 }
@@ -147,15 +153,26 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 		switch (chartype)
 		{
 
-		case CHAR_ERROR: //发现词法错误之后
+		//case CHAR_ERROR: //发现词法错误之后
+		//	tokenList.push_back(token(getTokenType(status), save, line)); //当前status是ERR
+		//	save = "";
+		//	save += i; 
+		//	status = (CHAR_ERROR | 1); //ERR之后
+		//	break;
+
+		case CHAR_END: //输入结束
 			tokenList.push_back(token(getTokenType(status), save, line));
 			save = "";
-			save += i; 
-			status = CHAR_ERROR |1;
+			save += i;
+			status = CHAR_END; //好像没用
+			break;
 
 		case CHAR_SPACE: //当前输入是空格
 			switch (status)
 			{
+			case (CHAR_ERROR | 1):
+				save += i;
+				break;
 			case CHAR_ENTER:
 			case (CHAR_DIVIS | 1):
 			case CHAR_QUOTE:
@@ -174,7 +191,9 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 		case CHAR_DOT: //当前输入是小数点
 			switch (status)
 			{
+			case (CHAR_ERROR | 1):
 			case (CHAR_DIVIS | 1):
+			case CHAR_QUOTE:
 				save += i;
 				break;
 			case CHAR_DIGIT:
@@ -192,6 +211,7 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 		case CHAR_DIGIT: //当前输入数字
 			switch (status)
 			{
+			case (CHAR_ERROR | 1):
 			case CHAR_DIGIT:
 			case (CHAR_DIGIT | 1): //real
 			case CHAR_ALPHA: //variable
@@ -211,6 +231,7 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 		case CHAR_ALPHA: //当前输入字母
 			switch (status)
 			{
+			case (CHAR_ERROR | 1):
 			case CHAR_ALPHA:
 			case (CHAR_DIVIS | 1):
 			case CHAR_QUOTE:
@@ -227,6 +248,7 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 		case CHAR_OPERA: //当前输入操作符（除了除号
 			switch (status)
 			{
+			case (CHAR_ERROR | 1):
 			case (CHAR_DIVIS | 1):
 			case CHAR_QUOTE:
 				save += i;
@@ -242,11 +264,28 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 		case CHAR_ENTER: //当前输入换行
 			switch (status)
 			{
-			case (CHAR_DIVIS | 1):
-				status = (CHAR_DIVIS | 2); //注释结束只有换行这一种可能，那就结算
+			case (CHAR_ERROR | 1):
+				save += i;
+				break;
+			case (CHAR_DIVIS | 1)://注释结束只有换行这一种可能，那就结算
 				tokenList.push_back(token(getTokenType(status), save, line));
 				save = "";
 				save += i;
+				status = CHAR_ENTER;
+				break;
+			case CHAR_QUOTE:
+				if (!bug)
+				{
+					firstWL = line;
+					bug = 1;
+				}
+				tokenList.push_back(token(getTokenType(status), save, line));
+				save = "";
+				save += "\\n"; //手动标明错误是回车？待定，看qt吧如果ERR都或者下划线的话
+				save += i;
+				status = CHAR_ERROR;
+				tokenList.push_back(token(getTokenType(status), save, line));//结算错误字
+				status = CHAR_ERROR | 1;
 				break;
 			default:
 				tokenList.push_back(token(getTokenType(status), save, line));
@@ -261,6 +300,7 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 		case CHAR_EQUAL: //当前输入'='
 			switch (status)
 			{
+			case (CHAR_ERROR | 1):
 			case (CHAR_DIVIS | 1):
 			case CHAR_QUOTE:
 				save += i;
@@ -287,6 +327,7 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 		case CHAR_LARGE: //当前输入'>'
 			switch (status)
 			{
+			case (CHAR_ERROR | 1):
 			case (CHAR_DIVIS | 1):
 			case CHAR_QUOTE:
 				save += i;
@@ -306,6 +347,7 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 		case CHAR_SMALL: //当前输入'<'
 			switch (status)
 			{
+			case (CHAR_ERROR | 1):
 			case (CHAR_DIVIS | 1):
 			case CHAR_QUOTE:
 				save += i;
@@ -321,6 +363,7 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 		case CHAR_DIVIS: //当前输入除号
 			switch (status)
 			{
+			case (CHAR_ERROR | 1):
 			case (CHAR_DIVIS | 1):
 			case CHAR_QUOTE:
 				save += i;
@@ -340,7 +383,10 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 		case CHAR_ESCAP: //当前输入转义符'\'
 			switch (status)
 			{
+			case (CHAR_ERROR | 1):
 			case (CHAR_DIVIS | 1):
+				save += i;
+				break;
 			case CHAR_QUOTE:
 				save += i;
 				status = CHAR_ESCAP; //引号中的转义符
@@ -359,20 +405,22 @@ vector<token> lexAn::analyze(string inputData) //先进入这个
 				save = "";
 				save += i;
 				status = CHAR_ERROR;
+				tokenList.push_back(token(getTokenType(status), save, line));//结算错误字
+				status = CHAR_ERROR | 1;
 				break;
 			}
 			break;
 
-		case CHAR_QUOTE:
+		case CHAR_QUOTE: //当前输入引号
 			switch (status)
 			{
+			case (CHAR_ERROR | 1):
 			case (CHAR_DIVIS | 1):
 				save += i;
-				status = (CHAR_DIVIS | 1);
 				break;
 			case CHAR_QUOTE:
 				save += i;
-				status = (CHAR_QUOTE | 1);
+				status = (CHAR_QUOTE | 1); //引号结束
 				break;
 			case CHAR_ESCAP:
 				save += i;
