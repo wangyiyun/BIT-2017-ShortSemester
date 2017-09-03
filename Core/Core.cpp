@@ -32,9 +32,9 @@ int main()
 		dat += tmp;
 	}
 	dat += '\0';
-	lexAn a = lexAn(); //´Ê·¨·ÖÎöÆ÷¶ÔÏó
+	lexAn a = lexAn(); //è¯æ³•åˆ†æå™¨å¯¹è±¡
 	auto k = a.analyze(dat);
-	for (auto i : k) //Ñ­»·µ½k½áÊø
+	for (auto i : k) //å¾ªç¯åˆ°kç»“æŸ
 	{
 		i.print();
 	} 
